@@ -1,6 +1,8 @@
-// window.c (ชั้น platform) - เพิ่มการรับเมาส์ขยับ (WM_MOUSEMOVE) เพื่อทำไฮไลต์ปุ่ม (step 6)
+// window.c (ชั้น platform) - เลือกวาด/ตอบสนองตาม "ฉากปัจจุบัน" (step 7.3)
 #include "window.h"
+#include "scene.h"
 #include "menu.h"
+#include "game.h"
 
 #define WIN_TITLE  "Sim Seiei"
 #define WIN_WIDTH  800
@@ -18,41 +20,49 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
-            menu_render(hwnd, hdc);
+
+            /* เปิดสมุดจดดูว่าอยู่ฉากไหน แล้ววาดฉากนั้น */
+            if (scene_get() == SCENE_MENU)
+                menu_render(hwnd, hdc);
+            else
+                game_render(hwnd, hdc);
+
             EndPaint(hwnd, &ps);
             return 0;
         }
 
         case WM_MOUSEMOVE:
-            /* เมาส์ขยับ -> บอก menu ให้เช็คว่ากำลังชี้ปุ่มไหนอยู่ (ไว้ไฮไลต์) */
-            menu_on_mouse_move(hwnd, LOWORD(lParam), HIWORD(lParam));
+            /* ไฮไลต์ปุ่ม มีเฉพาะในฉากเมนู */
+            if (scene_get() == SCENE_MENU)
+                menu_on_mouse_move(hwnd, LOWORD(lParam), HIWORD(lParam));
             return 0;
 
         case WM_SETCURSOR:
-            /* Windows ถามว่าจะใช้เคอร์เซอร์รูปไหน */
-            if (LOWORD(lParam) == HTCLIENT)   /* เฉพาะพื้นที่เนื้อหา (ไม่ใช่ขอบ/แถบหัว) */
+            /* เคอร์เซอร์รูปมือ มีเฉพาะตอนชี้ปุ่มในฉากเมนู */
+            if (scene_get() == SCENE_MENU && LOWORD(lParam) == HTCLIENT)
             {
                 POINT pt;
-                GetCursorPos(&pt);            /* ตำแหน่งเมาส์ (พิกัดของจอ) */
-                ScreenToClient(hwnd, &pt);    /* แปลงเป็นพิกัดในหน้าต่าง */
+                GetCursorPos(&pt);
+                ScreenToClient(hwnd, &pt);
                 if (menu_is_over_button(hwnd, pt.x, pt.y))
                 {
-                    SetCursor(LoadCursor(NULL, IDC_HAND));  /* ชี้ปุ่ม -> รูปมือ */
-                    return TRUE;              /* จัดการเองแล้ว ไม่ต้องให้ Windows ตั้งต่อ */
+                    SetCursor(LoadCursor(NULL, IDC_HAND));
+                    return TRUE;
                 }
             }
-            return DefWindowProc(hwnd, msg, wParam, lParam);  /* นอกนั้น -> ลูกศรปกติ */
+            return DefWindowProc(hwnd, msg, wParam, lParam);
 
         case WM_LBUTTONDOWN:
-        {
-            /* ถามโมดูล menu ว่าคลิกตรงนี้แล้วต้องทำอะไร */
-            MenuAction action = menu_on_click(hwnd, LOWORD(lParam), HIWORD(lParam));
+            /* คลิกปุ่ม มีเฉพาะในฉากเมนู */
+            if (scene_get() == SCENE_MENU)
+            {
+                MenuAction action = menu_on_click(hwnd, LOWORD(lParam), HIWORD(lParam));
 
-            if (action == MENU_ACTION_QUIT)
-                DestroyWindow(hwnd);       /* ปุ่ม Quick -> ปิดหน้าต่าง = ออกจากโปรแกรม */
-
+                if (action == MENU_ACTION_QUIT)
+                    DestroyWindow(hwnd);       /* ปุ่ม Quick -> ออกจากโปรแกรม */
+                /* New Game จะมาต่อสายใน step 7.4 */
+            }
             return 0;
-        }
 
         default:
             return DefWindowProc(hwnd, msg, wParam, lParam);
