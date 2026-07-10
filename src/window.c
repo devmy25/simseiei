@@ -1,4 +1,4 @@
-// window.c (ชั้น platform) - เพิ่มการรับคลิกเมาส์ ส่งให้ menu แล้วทำตาม action (step 5)
+// window.c (ชั้น platform) - เพิ่มการรับเมาส์ขยับ (WM_MOUSEMOVE) เพื่อทำไฮไลต์ปุ่ม (step 6)
 #include "window.h"
 #include "menu.h"
 
@@ -22,6 +22,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             EndPaint(hwnd, &ps);
             return 0;
         }
+
+        case WM_MOUSEMOVE:
+            /* เมาส์ขยับ -> บอก menu ให้เช็คว่ากำลังชี้ปุ่มไหนอยู่ (ไว้ไฮไลต์) */
+            menu_on_mouse_move(hwnd, LOWORD(lParam), HIWORD(lParam));
+            return 0;
 
         case WM_LBUTTONDOWN:
         {
