@@ -1,4 +1,4 @@
-// window.c (ชั้น platform) - เพิ่มการวาดหน้าจอ โดยส่งต่อให้โมดูล menu (step 3)
+// window.c (ชั้น platform) - เพิ่มการรับคลิกเมาส์ ส่งให้ menu แล้วทำตาม action (step 5)
 #include "window.h"
 #include "menu.h"
 
@@ -18,8 +18,19 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
-            menu_render(hwnd, hdc);        /* ให้โมดูล menu เป็นคนวาด */
+            menu_render(hwnd, hdc);
             EndPaint(hwnd, &ps);
+            return 0;
+        }
+
+        case WM_LBUTTONDOWN:
+        {
+            /* ถามโมดูล menu ว่าคลิกตรงนี้แล้วต้องทำอะไร */
+            MenuAction action = menu_on_click(hwnd, LOWORD(lParam), HIWORD(lParam));
+
+            if (action == MENU_ACTION_QUIT)
+                DestroyWindow(hwnd);       /* ปุ่ม Quick -> ปิดหน้าต่าง = ออกจากโปรแกรม */
+
             return 0;
         }
 

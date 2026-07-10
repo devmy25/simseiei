@@ -1,4 +1,4 @@
-// menu.c (ชั้น scene) - หน้าเมนู: หัวเรื่อง + ปุ่ม 3 ปุ่ม (step 4)
+// menu.c (ชั้น scene) - หน้าเมนู: เพิ่ม hit-testing เวลาคลิกปุ่ม (step 5)
 #include "menu.h"
 
 #define NUM_BUTTONS 3
@@ -15,7 +15,7 @@ static RECT menu_button_rect(HWND hwnd, int i)
     RECT rc;
     GetClientRect(hwnd, &rc);
 
-    int x   = (rc.right - BTN_W) / 2;         /* กึ่งกลางแนวนอน */
+    int x   = (rc.right - BTN_W) / 2;
     int top = BTN_TOP + i * (BTN_H + BTN_GAP);
 
     RECT br = { x, top, x + BTN_W, top + BTN_H };
@@ -28,7 +28,7 @@ void menu_render(HWND hwnd, HDC hdc)
     GetClientRect(hwnd, &rc);
 
     SetBkMode(hdc, TRANSPARENT);
-    SetTextColor(hdc, RGB(46, 93, 31));   /* ใช้ทั้งหัวเรื่องและปุ่ม */
+    SetTextColor(hdc, RGB(46, 93, 31));
 
     /* ---------- (1) หัวเรื่อง ---------- */
     HFONT titleFont = CreateFont(64, 0,0,0, FW_BOLD, FALSE,FALSE,FALSE,
@@ -49,8 +49,8 @@ void menu_render(HWND hwnd, HDC hdc)
         DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, "Trebuchet MS");
     oldFont = SelectObject(hdc, btnFont);
 
-    HPEN   pen      = CreatePen(PS_SOLID, 3, RGB(110, 168, 61));  /* ขอบเขียว */
-    HBRUSH brush    = CreateSolidBrush(RGB(255, 255, 255));       /* พื้นขาว */
+    HPEN   pen      = CreatePen(PS_SOLID, 3, RGB(110, 168, 61));
+    HBRUSH brush    = CreateSolidBrush(RGB(255, 255, 255));
     HPEN   oldPen   = SelectObject(hdc, pen);
     HBRUSH oldBrush = SelectObject(hdc, brush);
 
@@ -71,6 +71,20 @@ void menu_render(HWND hwnd, HDC hdc)
 
 MenuAction menu_on_click(HWND hwnd, int x, int y)
 {
-    (void)hwnd; (void)x; (void)y;
-    return MENU_ACTION_NONE;   /* step หน้าค่อยทำ hit-testing */
+    POINT pt = { x, y };
+
+    for (int i = 0; i < NUM_BUTTONS; i++)
+    {
+        RECT br = menu_button_rect(hwnd, i);
+        if (PtInRect(&br, pt))          /* คลิกโดนกรอบปุ่ม i ไหม? */
+        {
+            switch (i)
+            {
+                case 0: return MENU_ACTION_NEW_GAME;
+                case 1: return MENU_ACTION_LOAD;
+                case 2: return MENU_ACTION_QUIT;   /* ปุ่ม Quick -> ออกจากโปรแกรม */
+            }
+        }
+    }
+    return MENU_ACTION_NONE;   /* ไม่โดนปุ่มไหนเลย */
 }
