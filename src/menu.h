@@ -25,4 +25,7 @@ MenuAction menu_on_click(HWND hwnd, int x, int y);
 /* อัปเดตปุ่มที่เมาส์กำลังชี้อยู่ (เรียกตอนเมาส์ขยับ) เพื่อทำไฮไลต์ */
 void menu_on_mouse_move(HWND hwnd, int x, int y);
 
+/* คืน 1 ถ้าจุด (x, y) อยู่บนปุ่ม (ไว้เปลี่ยนเคอร์เซอร์เป็นรูปมือ) */
+int menu_is_over_button(HWND hwnd, int x, int y);
+
 #endif /* MENU_H */

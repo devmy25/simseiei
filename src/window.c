@@ -28,6 +28,21 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             menu_on_mouse_move(hwnd, LOWORD(lParam), HIWORD(lParam));
             return 0;
 
+        case WM_SETCURSOR:
+            /* Windows ถามว่าจะใช้เคอร์เซอร์รูปไหน */
+            if (LOWORD(lParam) == HTCLIENT)   /* เฉพาะพื้นที่เนื้อหา (ไม่ใช่ขอบ/แถบหัว) */
+            {
+                POINT pt;
+                GetCursorPos(&pt);            /* ตำแหน่งเมาส์ (พิกัดของจอ) */
+                ScreenToClient(hwnd, &pt);    /* แปลงเป็นพิกัดในหน้าต่าง */
+                if (menu_is_over_button(hwnd, pt.x, pt.y))
+                {
+                    SetCursor(LoadCursor(NULL, IDC_HAND));  /* ชี้ปุ่ม -> รูปมือ */
+                    return TRUE;              /* จัดการเองแล้ว ไม่ต้องให้ Windows ตั้งต่อ */
+                }
+            }
+            return DefWindowProc(hwnd, msg, wParam, lParam);  /* นอกนั้น -> ลูกศรปกติ */
+
         case WM_LBUTTONDOWN:
         {
             /* ถามโมดูล menu ว่าคลิกตรงนี้แล้วต้องทำอะไร */

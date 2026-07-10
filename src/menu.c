@@ -36,6 +36,12 @@ static int menu_button_at(HWND hwnd, int x, int y)
     return -1;
 }
 
+/* คืน 1 ถ้า (x, y) อยู่บนปุ่มใดปุ่มหนึ่ง (ไว้ให้ window เปลี่ยนเคอร์เซอร์เป็นรูปมือ) */
+int menu_is_over_button(HWND hwnd, int x, int y)
+{
+    return menu_button_at(hwnd, x, y) >= 0;
+}
+
 void menu_render(HWND hwnd, HDC hdc)
 {
     RECT rc;
