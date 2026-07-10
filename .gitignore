@@ -1,0 +1,10 @@
+# ผลลัพธ์การ build
+/bin/
+*.exe
+*.o
+*.obj
+
+# ไฟล์ระบบ / เอดิเตอร์
+Thumbs.db
+.DS_Store
+.vscode/
