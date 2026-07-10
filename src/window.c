@@ -1,11 +1,10 @@
-// window.c (ชั้น platform) - สร้างหน้าต่าง + วงวนหลัก (step 1)
+// window.c (ชั้น platform) - เพิ่มพื้นหลังสีเขียวอ่อน (step 2)
 #include "window.h"
 
 #define WIN_TITLE  "Sim Seiei"
 #define WIN_WIDTH  800
 #define WIN_HEIGHT 600
 
-/* WndProc = ฝ่ายรับข่าวของหน้าต่าง (เก็บเป็น static ใช้เฉพาะในไฟล์นี้) */
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -28,6 +27,7 @@ HWND window_create(HINSTANCE hInstance, int nCmdShow)
     wc.hInstance     = hInstance;
     wc.lpszClassName = CLASS_NAME;
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = CreateSolidBrush(RGB(207, 230, 168));  /* พื้นหลังเขียวอ่อน #cfe6a8 */
 
     RegisterClass(&wc);
 
