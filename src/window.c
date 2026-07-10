@@ -1,5 +1,6 @@
-// window.c (ชั้น platform) - เพิ่มพื้นหลังสีเขียวอ่อน (step 2)
+// window.c (ชั้น platform) - เพิ่มการวาดหน้าจอ โดยส่งต่อให้โมดูล menu (step 3)
 #include "window.h"
+#include "menu.h"
 
 #define WIN_TITLE  "Sim Seiei"
 #define WIN_WIDTH  800
@@ -12,6 +13,15 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            menu_render(hwnd, hdc);        /* ให้โมดูล menu เป็นคนวาด */
+            EndPaint(hwnd, &ps);
+            return 0;
+        }
 
         default:
             return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -27,7 +37,7 @@ HWND window_create(HINSTANCE hInstance, int nCmdShow)
     wc.hInstance     = hInstance;
     wc.lpszClassName = CLASS_NAME;
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = CreateSolidBrush(RGB(207, 230, 168));  /* พื้นหลังเขียวอ่อน #cfe6a8 */
+    wc.hbrBackground = CreateSolidBrush(RGB(207, 230, 168));  /* พื้นหลังเขียวอ่อน */
 
     RegisterClass(&wc);
 
