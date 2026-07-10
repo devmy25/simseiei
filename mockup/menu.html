@@ -1,0 +1,129 @@
+<!--
+  ==========================================================
+   Sim Seiei  -  หน้า Load Menu (mockup / แบบร่าง)
+  ==========================================================
+  ไฟล์นี้เป็นแค่ "ภาพตัวอย่าง" ของหน้าเมนู ยังไม่ใช่เกมจริง
+  เอาไว้ดูหน้าตาก่อน แล้วค่อยเอาไปทำเป็นเกม C จริงทีหลัง
+
+  วิธีเปิดดู: ดับเบิลคลิกไฟล์นี้ เปิดในเบราว์เซอร์ได้เลย
+
+  อยากแก้ สี / ข้อความ / ขนาด ?
+   -> สี      แก้ในบล็อก  :root { ... }  ข้างล่าง (ที่เดียวจบ)
+   -> ข้อความ แก้ในส่วน  <body> ... </body>
+  ==========================================================
+-->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sim Seiei - Menu</title>
+
+<style>
+  /* ---------------------------------------------------------
+     [1] ตัวแปรสี & ขนาด  --  อยากเปลี่ยนอะไร แก้ตรงนี้ที่เดียว
+     --------------------------------------------------------- */
+  :root {
+    --bg-green:      #cfe6a8;   /* พื้นหลัง สีเขียวอ่อน  <-- เปลี่ยนสีพื้นหลังตรงนี้ */
+    --bg-green-2:    #b8dd8c;   /* สีเขียวเข้มขึ้นนิด ไว้ไล่เฉดให้สวย */
+
+    --title-color:   #2e5d1f;   /* สีตัวหนังสือ "Hello my game" */
+    --title-shadow:  #ffffff;   /* เงาขาวหลังตัวหนังสือ ให้อ่านง่าย */
+
+    --btn-bg:        #ffffff;   /* สีพื้นปุ่มเมนู */
+    --btn-text:      #2e5d1f;   /* สีตัวหนังสือในปุ่ม */
+    --btn-border:    #6ea83d;   /* สีขอบปุ่ม */
+    --btn-hover:     #eaffcf;   /* สีปุ่มตอนเอาเมาส์ไปชี้ */
+
+    --font-main: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+  }
+
+  /* ---------------------------------------------------------
+     [2] จัดหน้าให้ทุกอย่างอยู่กลางจอ พื้นหลังเต็มจอ
+     --------------------------------------------------------- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: var(--font-main);
+    /* ไล่เฉดสีเขียวอ่อนจากบนลงล่าง ดูนุ่มตา */
+    background: linear-gradient(180deg, var(--bg-green) 0%, var(--bg-green-2) 100%);
+
+    /* จัดของทั้งหมดให้อยู่กลางจอ (แนวตั้ง+แนวนอน) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;                 /* ระยะห่างระหว่าง หัวเรื่อง กับ เมนู */
+  }
+
+  /* ---------------------------------------------------------
+     [3] หัวเรื่อง "Hello my game"
+     --------------------------------------------------------- */
+  .title {
+    font-size: 64px;
+    font-weight: bold;
+    color: var(--title-color);
+    letter-spacing: 1px;
+    text-align: center;
+    /* เงาขาวรอบตัวหนังสือ ให้เด้งออกจากพื้นหลัง */
+    text-shadow:
+       2px  2px 0 var(--title-shadow),
+      -2px -2px 0 var(--title-shadow),
+       2px -2px 0 var(--title-shadow),
+      -2px  2px 0 var(--title-shadow);
+  }
+
+  /* ---------------------------------------------------------
+     [4] กล่องเมนู  (ปุ่มเรียงลงมาเป็นแนวตั้ง)
+     --------------------------------------------------------- */
+  .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;                 /* ระยะห่างระหว่างปุ่ม */
+    width: 320px;              /* ความกว้างของปุ่ม */
+  }
+
+  .menu-btn {
+    font-family: var(--font-main);
+    font-size: 24px;
+    padding: 16px 24px;
+    color: var(--btn-text);
+    background: var(--btn-bg);
+    border: 3px solid var(--btn-border);
+    border-radius: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.08s ease, background 0.15s ease;
+  }
+
+  /* ตอนเอาเมาส์ไปชี้ปุ่ม -> เปลี่ยนสี + ขยับขึ้นนิดนึง */
+  .menu-btn:hover {
+    background: var(--btn-hover);
+    transform: translateY(-3px);
+  }
+
+  /* ตอนกดปุ่ม -> กดลงไปนิดนึง ให้รู้สึกว่ากดโดน */
+  .menu-btn:active {
+    transform: translateY(0);
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- [A] ข้อความหัวเรื่อง  (อยากเปลี่ยนคำ แก้ตรงนี้) -->
+  <div class="title">Hello my game</div>
+
+  <!-- [B] เมนู 3 ปุ่ม  (อยากเพิ่ม/ลบปุ่ม ก็ copy บรรทัด button ได้เลย) -->
+  <div class="menu">
+    <button class="menu-btn">New Game</button>
+    <button class="menu-btn">Load Game Save</button>
+    <button class="menu-btn">Quick</button>
+  </div>
+
+</body>
+</html>
