@@ -1,4 +1,4 @@
-// window.c (ชั้น platform) - เลือกวาด/ตอบสนองตาม "ฉากปัจจุบัน" (step 7.3)
+// window.c (ชั้น platform) - ต่อสายสลับฉาก: New Game -> เกม, Esc -> เมนู (step 7.4)
 #include "window.h"
 #include "scene.h"
 #include "menu.h"
@@ -21,7 +21,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
 
-            /* เปิดสมุดจดดูว่าอยู่ฉากไหน แล้ววาดฉากนั้น */
+            /* วาดตามฉากปัจจุบัน */
             if (scene_get() == SCENE_MENU)
                 menu_render(hwnd, hdc);
             else
@@ -32,13 +32,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         }
 
         case WM_MOUSEMOVE:
-            /* ไฮไลต์ปุ่ม มีเฉพาะในฉากเมนู */
             if (scene_get() == SCENE_MENU)
                 menu_on_mouse_move(hwnd, LOWORD(lParam), HIWORD(lParam));
             return 0;
 
         case WM_SETCURSOR:
-            /* เคอร์เซอร์รูปมือ มีเฉพาะตอนชี้ปุ่มในฉากเมนู */
             if (scene_get() == SCENE_MENU && LOWORD(lParam) == HTCLIENT)
             {
                 POINT pt;
@@ -53,14 +51,29 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             return DefWindowProc(hwnd, msg, wParam, lParam);
 
         case WM_LBUTTONDOWN:
-            /* คลิกปุ่ม มีเฉพาะในฉากเมนู */
             if (scene_get() == SCENE_MENU)
             {
                 MenuAction action = menu_on_click(hwnd, LOWORD(lParam), HIWORD(lParam));
 
-                if (action == MENU_ACTION_QUIT)
-                    DestroyWindow(hwnd);       /* ปุ่ม Quick -> ออกจากโปรแกรม */
-                /* New Game จะมาต่อสายใน step 7.4 */
+                if (action == MENU_ACTION_NEW_GAME)
+                {
+                    scene_set(SCENE_GAME);              /* พลิกสมุดไปฉากเกม */
+                    InvalidateRect(hwnd, NULL, TRUE);   /* ขอวาดจอใหม่ */
+                }
+                else if (action == MENU_ACTION_QUIT)
+                {
+                    DestroyWindow(hwnd);                /* ปุ่ม Quick -> ออกจากโปรแกรม */
+                }
+                /* MENU_ACTION_LOAD ยังไม่ทำ ไว้ step ต่อไป */
+            }
+            return 0;
+
+        case WM_KEYDOWN:
+            /* กด Esc ตอนอยู่ในเกม -> กลับหน้าเมนู */
+            if (wParam == VK_ESCAPE && scene_get() == SCENE_GAME)
+            {
+                scene_set(SCENE_MENU);
+                InvalidateRect(hwnd, NULL, TRUE);
             }
             return 0;
 
